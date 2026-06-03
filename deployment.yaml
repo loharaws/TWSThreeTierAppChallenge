@@ -125,22 +125,8 @@ spec:
 
           env:
             - name: MONGO_CONN_STR
-              value: mongodb://mongodb-service:27017/mydatabase
+              value: mongodb://admin:Admin@123@mongodb-service:27017/mydatabase?authSource=admin
 
-            - name: USE_DB_AUTH
-              value: "true"
-
-            - name: MONGO_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: username
-
-            - name: MONGO_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-secret
-                  key: password
 ---
 # =========================================
 # Backend Service
