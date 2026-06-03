@@ -125,7 +125,7 @@ spec:
 
           env:
             - name: MONGO_CONN_STR
-              value: mongodb://admin:Admin@123@mongodb-service:27017/mydatabase?authSource=admin
+              mongodb://admin:Admin%40123@mongodb-service:27017/mydatabase?authSource=admin
 
 ---
 # =========================================
