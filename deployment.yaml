@@ -125,7 +125,7 @@ spec:
           image: yashwantlohar/tws-backend:latest
 
           ports:
-            - containerPort: 5000
+            - containerPort: 3500
 
           env:
             - name: MONGO_CONN_STR
@@ -158,8 +158,8 @@ spec:
     app: backend
 
   ports:
-    - port: 5000
-      targetPort: 5000
+    - port: 3500
+      targetPort: 3500
 
   type: ClusterIP
 ---
@@ -193,7 +193,7 @@ spec:
 
           env:
             - name: REACT_APP_API_URL
-              value: http://backend-service:5000
+              value: http://backend-service:3500
 ---
 # =========================================
 # Frontend Service
