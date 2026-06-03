@@ -156,12 +156,11 @@ metadata:
 spec:
   selector:
     app: backend
-
+  type: NodePort
   ports:
     - port: 3500
       targetPort: 3500
-
-  type: ClusterIP
+      nodePort: 30350
 ---
 # =========================================
 # Frontend Deployment
