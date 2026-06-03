@@ -99,36 +99,52 @@ spec:
 # =========================================
 # Backend Deployment
 # =========================================
+# =========================================
+# Backend Deployment
+# =========================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
+
 spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: backend
+
   template:
+    metadata:
+      labels:
+        app: backend
+
     spec:
       containers:
-      - name: backend
-        image: yashwantlohar/tws-backend:latest
+        - name: backend
+          image: yashwantlohar/tws-backend:latest
 
-        env:
-          - name: MONGO_CONN_STR
-            value: mongodb://mongodb-service:27017/mydatabase?authSource=admin
+          ports:
+            - containerPort: 5000
 
-          - name: USE_DB_AUTH
-            value: "true"
+          env:
+            - name: MONGO_CONN_STR
+              value: mongodb://mongodb-service:27017/mydatabase?authSource=admin
 
-          - name: MONGO_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: mongodb-secret
-                key: username
+            - name: USE_DB_AUTH
+              value: "true"
 
-          - name: MONGO_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: mongodb-secret
-                key: password
+            - name: MONGO_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: username
 
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-secret
+                  key: password
 ---
 # =========================================
 # Backend Service
@@ -156,7 +172,7 @@ metadata:
   name: frontend-deployment
 
 spec:
-  replicas: 2
+  replicas: 1
 
   selector:
     matchLabels:
