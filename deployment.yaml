@@ -1,0 +1,225 @@
+# =========================================
+# Persistent Volume
+# =========================================
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+
+spec:
+  capacity:
+    storage: 2Gi
+
+  accessModes:
+    - ReadWriteOnce
+
+  persistentVolumeReclaimPolicy: Retain
+
+  hostPath:
+    path: /data/mongodb
+---
+# =========================================
+# Persistent Volume Claim
+# =========================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 2Gi
+
+  volumeName: mongodb-pv
+
+
+# =========================================
+# MongoDB Persistent Volume Claim
+# =========================================
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+
+spec:
+  accessModes:
+    - ReadWriteOnce
+
+  resources:
+    requests:
+      storage: 2Gi
+---
+# =========================================
+# MongoDB Deployment
+# =========================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: mongodb
+
+  template:
+    metadata:
+      labels:
+        app: mongodb
+
+    spec:
+      containers:
+        - name: mongodb
+          image: mongo:7
+
+          ports:
+            - containerPort: 27017
+
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: /data/db
+
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+---
+# =========================================
+# MongoDB Service
+# =========================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-service
+
+spec:
+  selector:
+    app: mongodb
+
+  ports:
+    - port: 27017
+      targetPort: 27017
+
+  type: ClusterIP
+
+    ---
+# =========================================
+# Backend Deployment
+# =========================================
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: backend-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: backend
+
+  template:
+    metadata:
+      labels:
+        app: backend
+
+    spec:
+      containers:
+        - name: backend
+
+          image: yashwantlohar/tws-backend:latest
+
+          ports:
+            - containerPort: 5000
+
+          env:
+            - name: MONGO_URI
+              value: mongodb://mongodb-service:27017/mydatabase
+
+            - name: PORT
+              value: "5000"
+---
+# =========================================
+# Backend Service
+# =========================================
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: backend-service
+
+spec:
+  selector:
+    app: backend
+
+  ports:
+    - port: 5000
+      targetPort: 5000
+
+  type: ClusterIP
+
+
+    ---
+# =========================================
+# Frontend Deployment
+# =========================================
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend-deployment
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+
+    spec:
+      containers:
+        - name: frontend
+
+          image: yashwantlohar/tws-frontend:latest
+
+          ports:
+            - containerPort: 80
+
+          env:
+            - name: REACT_APP_API_URL
+              value: http://backend-service:5000
+---
+# =========================================
+# Frontend Service
+# =========================================
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: frontend-service
+
+spec:
+  selector:
+    app: frontend
+
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080
+
+  type: NodePort
+
+
+    
