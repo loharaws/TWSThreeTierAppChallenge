@@ -1,3 +1,17 @@
+#apiVersion: v1
+#kind: PersistentVolume
+#metadata:
+  #name: mongodb-pv
+#spec:
+  #capacity:
+    #storage: 2Gi
+  #accessModes:
+    #- ReadWriteOnce
+  #persistentVolumeReclaimPolicy: Retain
+  #hostPath:
+    #path: /data/mongodb
+---
+
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -5,12 +19,15 @@ metadata:
 spec:
   capacity:
     storage: 2Gi
+  volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
-  hostPath:
-    path: /data/mongodb
----
+  storageClassName: gp3
+  csi:
+    driver: ebs.csi.aws.com
+    volumeHandle: vol-004e7ffe6995307c5  # <-- YOUR EBS VOLUME ID
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
