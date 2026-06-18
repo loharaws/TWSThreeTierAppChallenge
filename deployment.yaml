@@ -102,37 +102,7 @@ spec:
   type: ClusterIP
 ---
 
-#====================================
- Ingress
-#=====================================
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: app-ingress
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-service
-                port:
-                  number: 80
-
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: backend-service
-                port:
-                  number: 3500
 
 
 # =========================================
@@ -181,11 +151,11 @@ metadata:
 spec:
   selector:
     app: backend
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3500
       targetPort: 3500
-      nodePort: 30350
+      
 ---
 # =========================================
 # Frontend Deployment
@@ -211,7 +181,7 @@ spec:
             - containerPort: 80
           env:
             - name: REACT_APP_API_URL
-              value: http://34.203.226.186:30350
+              value: /api
 ---
 # =========================================
 # Frontend Service
@@ -223,7 +193,40 @@ metadata:
 spec:
   selector:
     app: frontend
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 80
+
+
+#====================================
+ Ingress
+#=====================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: app-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 80
+
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend-service
+                port:
+                  number: 3500
