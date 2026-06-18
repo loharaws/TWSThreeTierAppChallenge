@@ -124,7 +124,7 @@ spec:
           ports:
             - containerPort: 3500
           env:
-            - name: MONGO_URL
+            - name: MONGO_CONN_STR
               value: mongodb://mongodb-service:27017/mydatabase?authSource=admin
             - name: MONGO_USERNAME
               valueFrom:
