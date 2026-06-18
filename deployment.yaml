@@ -1,17 +1,6 @@
-#apiVersion: v1
-#kind: PersistentVolume
-#metadata:
-  #name: mongodb-pv
-#spec:
-  #capacity:
-    #storage: 2Gi
-  #accessModes:
-    #- ReadWriteOnce
-  #persistentVolumeReclaimPolicy: Retain
-  #hostPath:
-    #path: /data/mongodb
----
-
+# =========================================
+# Persistent Volume (EBS)
+# =========================================
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -28,6 +17,9 @@ spec:
     driver: ebs.csi.aws.com
     volumeHandle: vol-004e7ffe6995307c5
 ---
+# =========================================
+# Persistent Volume Claim
+# =========================================
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -73,27 +65,22 @@ spec:
       containers:
         - name: mongodb
           image: mongo:7
-
           ports:
             - containerPort: 27017
-
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: mongodb-secret
                   key: username
-
             - name: MONGO_INITDB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: mongodb-secret
                   key: password
-
           volumeMounts:
             - name: mongodb-storage
               mountPath: /data/db
-
       volumes:
         - name: mongodb-storage
           persistentVolumeClaim:
@@ -117,47 +104,33 @@ spec:
 # =========================================
 # Backend Deployment
 # =========================================
-# =========================================
-# Backend Deployment
-# =========================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
-
 spec:
   replicas: 1
-
   selector:
     matchLabels:
       app: backend
-
   template:
     metadata:
       labels:
         app: backend
-
     spec:
       containers:
         - name: backend
           image: 656326303295.dkr.ecr.us-east-1.amazonaws.com/tws-backend:latest
-
           ports:
             - containerPort: 3500
-
           env:
-            - name: MONGO_CONN_STR
+            - name: MONGO_URL
               value: mongodb://mongodb-service:27017/mydatabase?authSource=admin
-
-            - name: USE_DB_AUTH
-              value: "true"
-
             - name: MONGO_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: mongodb-secret
                   key: username
-
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -187,27 +160,21 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
-
 spec:
   replicas: 1
-
   selector:
     matchLabels:
       app: frontend
-
   template:
     metadata:
       labels:
         app: frontend
-
     spec:
       containers:
         - name: frontend
           image: 656326303295.dkr.ecr.us-east-1.amazonaws.com/tws-frontend:latest
-
           ports:
             - containerPort: 80
-
           env:
             - name: REACT_APP_API_URL
               value: http://backend-service:3500
@@ -219,14 +186,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
-
 spec:
   selector:
     app: frontend
-
   type: LoadBalancer
-
   ports:
     - port: 80
       targetPort: 80
-      
