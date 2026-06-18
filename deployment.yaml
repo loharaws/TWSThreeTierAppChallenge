@@ -139,7 +139,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: yashwantlohar/tws-backend:latest
+          image: tws-backend:latest
 
           ports:
             - containerPort: 3500
@@ -202,7 +202,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: yashwantlohar/tws-frontend:latest
+          image: tws-frontend:latest
 
           ports:
             - containerPort: 80
