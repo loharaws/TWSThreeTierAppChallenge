@@ -139,7 +139,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: tws-backend:latest
+          image: 656326303295.dkr.ecr.us-east-1.amazonaws.com/tws-backend:latest
 
           ports:
             - containerPort: 3500
@@ -202,7 +202,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: tws-frontend:latest
+          image: 656326303295.dkr.ecr.us-east-1.amazonaws.com/tws-frontend:latest
 
           ports:
             - containerPort: 80
