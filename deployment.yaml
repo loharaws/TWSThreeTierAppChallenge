@@ -177,7 +177,7 @@ spec:
             - containerPort: 80
           env:
             - name: REACT_APP_API_URL
-              value: http://backend-service:3500
+              value: http://34.203.226.186:30350
 ---
 # =========================================
 # Frontend Service
