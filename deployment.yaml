@@ -15,7 +15,7 @@ spec:
   storageClassName: manual
   csi:
     driver: ebs.csi.aws.com
-    volumeHandle: vol-004e7ffe6995307c5
+    volumeHandle: vol-0b6027f72b2246f2d
 ---
 # =========================================
 # Persistent Volume Claim
